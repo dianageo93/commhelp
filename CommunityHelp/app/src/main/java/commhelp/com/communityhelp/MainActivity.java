@@ -133,7 +133,8 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        executePost("https://http://commhelpapp.appspot.com/registeruser", jo.toString());
+        String ret = executePost("https://http://commhelpapp.appspot.com/registeruser", jo.toString());
+        Log.i(TAG, "RASPUNS"+ret);
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -149,7 +150,8 @@ public class MainActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            executePost("https://http://commhelpapp.appspot.com/updateuser", jo.toString());
+            String ret = executePost("https://http://commhelpapp.appspot.com/updateuser", jo.toString());
+            Log.i(TAG, "RASPUNS"+ret);
         }
 
         @Override
