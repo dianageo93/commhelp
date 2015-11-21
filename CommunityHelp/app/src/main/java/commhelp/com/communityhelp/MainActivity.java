@@ -318,6 +318,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         // User touched the dialog's positive button
+        String name = ((EditText) dialog.getDialog().findViewById(R.id.username))
+                .getText().toString();
+        Boolean isUser = ((RadioButton) dialog.getDialog().findViewById(R.id.radio_user))
+                .isChecked();
+        String phoneNumber = ((EditText) dialog.getDialog().findViewById(R.id.phone_number))
+                .getText().toString();
+        Log.i(TAG, "name: " + name + " is user: " + isUser + " phone: " + phoneNumber);
+        if (isUser) {
+            String yearOfBirth = ((EditText) dialog.getDialog().findViewById(R.id.birth_year))
+                    .getText().toString();
+            Boolean isMale = ((RadioButton) dialog.getDialog().findViewById(R.id.radio_m))
+                    .isChecked();
+            Log.i(TAG, "yearOfBirth: " + yearOfBirth + " is male: " + isMale);
+        }
     }
 
     public void onRadioButtonClicked(View view) {
