@@ -36,11 +36,11 @@ class RegisterUser(webapp2.RequestHandler):
         )
         u.put()
 
-        registered_users = RegisteredUser.all()
-        ret = ""
-        for u in registered_users:
-            ret = ret + str(u)
-        return ret
+#         registered_users = RegisteredUser.all()
+#         ret = ""
+#         for u in registered_users:
+#             ret = ret + str(u)
+#         return ret
 
 class GetHelp(webapp2.RequestHandler):
     def post(self):
@@ -75,11 +75,11 @@ class UpdateUserData(webapp2.RequestHandler):
         curr_user.lon = float(jsonobject["lon"])
         curr_user.put()
 
-        registered_users = RegisteredUser.all()
-        ret = ""
-        for u in registered_users:
-            ret = ret + str(u)
-        return ret
+#         registered_users = RegisteredUser.all()
+#         ret = ""
+#         for u in registered_users:
+#             ret = ret + str(u)
+#         return ret
 
 class Notifier(webapp2.RequestHandler):
     def post(self):
