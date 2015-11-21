@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -25,13 +26,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+                    LoginDialogFragment.LoginDialogListener {
 
     private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     private static final float LOCATION_REFRESH_DISTANCE = (float) 0.1;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
+    private DialogFragment dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity
                 String token = sharedPreferences
                         .getString(QuickstartPreferences.TOKEN, "");
                 Log.i(TAG, "I have registered" + token);
+                showLoginDialog();
             }
         };
 
@@ -213,5 +219,40 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void showLoginDialog() {
+        // Create an instance of the dialog fragment and show it
+        dialog = new LoginDialogFragment();
+        dialog.show(getSupportFragmentManager(), "LoginDialogFragment");
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the LoginDialogFragment.LoginDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        RadioGroup gender = (RadioGroup) dialog.getDialog().findViewById(R.id.radio_gender);
+        EditText birthYear = (EditText) dialog.getDialog().findViewById(R.id.birth_year);
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_user:
+                if (checked) {
+                    gender.setVisibility(View.VISIBLE);
+                    birthYear.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.radio_volunteer:
+                if (checked) {
+                    gender.setVisibility(View.INVISIBLE);
+                    birthYear.setVisibility(View.INVISIBLE);
+                }
+                break;
+        }
     }
 }

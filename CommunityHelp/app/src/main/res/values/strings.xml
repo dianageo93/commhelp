@@ -6,4 +6,14 @@
 
     <string name="action_settings">Settings</string>
     <string name="button_message">Help!</string>
+    <string name="dialog_login">Onboarding</string>
+    <string name="dialog_register">Register</string>
+    <string name="username">Name</string>
+    <string name="dialog_user">User</string>
+    <string name="dialog_volunteer">Volunteer</string>
+    <string name="dialog_phone_number">Phone number</string>
+    <string name="dialog_birth_year">Year of birth</string>
+    <string name="dialog_gender">Gender:</string>
+    <string name="dialog_male">M</string>
+    <string name="dialog_female">F</string>
 </resources>
