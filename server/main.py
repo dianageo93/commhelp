@@ -8,13 +8,23 @@ from google.appengine.ext import db
 import json
 from RegisteredUser import RegisteredUser
 
-from optparse import OptionParser
-import inspect
-
 class RegisterUser(webapp2.RequestHandler):
     def post(self):
+        self.response.write(cgi.escape(self.request.get('gcmtoken')))
+        self.response.write(cgi.escape(self.request.get('name')))
+
         jsonobject = json.loads(self.request.body)
+
+        # Check if the uid is unique
+        curr_uid = RegisteredUser.all(keys_only=True).filter(
+            'uid', jsonobject["uid"]
+        ).get()
+        if curr_uid:
+            raise Exception('UID must have a unique value!')
+
+        # Add user to datastore
         u = RegisteredUser(
+            uid=jsonobject["uid"],
             name=jsonobject["name"],
             lat = float(jsonobject["lat"]),
             lon = float(jsonobject["lon"]),
@@ -24,48 +34,37 @@ class RegisterUser(webapp2.RequestHandler):
         u.put()
 
 class GetHelp(webapp2.RequestHandler):
-
     def post(self):
         RADIUS = 100
         jsonobject = json.loads(self.request.body)
         # XXX: Super ultra mega hack because GQL doesn't allow for multiple
         # filters that use <, >, <= or >=
-        registered_users = RegisteredUser.all().filter(
-            'lat >=', float(jsonobject["lat"]) - RADIUS
-        )
+        registered_users = RegisteredUser.all().filter("role =", "helper")
         registered_users = filter(
-            lambda u: (u.lat <= float(jsonobject["lat"]) + RADIUS
+            lambda u: (u.lat >= float(jsonobject["lat"]) - RADIUS
+                and u.lat <= float(jsonobject["lat"]) + RADIUS
                 and u.lon >= float(jsonobject["lon"]) - RADIUS
                 and u.lon <= float(jsonobject["lon"]) + RADIUS),
             registered_users)
-#         registered_users = db.GqlQuery(
-#             "SELECT * \
-#                 FROM RegisteredUser \
-#                 WHERE lat >= :1 and lat <= :1 and lon >= :2 and lon <= :2",
-#             float(jsonobject["lat"]) - RADIUS,
-#             float(jsonobject["lat"]) + RADIUS,
-#             float(jsonobject["lon"]) - RADIUS,
-#             float(jsonobject["lon"]) + RADIUS
-#         )
-#         registered_users = db.GqlQuery(
-#             "SELECT * \
-#                 FROM RegisteredUser \
-#                 WHERE lat >= :1",
-#             jsonobject["lat"]
-#         )
-#         print inspect.getmembers(db.GeoPt, predicate=inspect.ismethod)
         self.response.write("Registered users:\n")
         for u in registered_users:
             self.response.write(str(u)+'\n')
 
 class UpdateUserData(webapp2.RequestHandler):
     def post(self):
-        pass
+        jsonobject = json.loads(self.request.body)
+        users = RegisteredUser.all()
+        curr_user = filter(
+            lambda x: x,
+            [u if u.uid == jsonobject["uid"] else None for u in users]
+        )
+        if len(curr_user) != 1:
+            raise Exception("User not in DB!")
 
-class Register(webapp2.RequestHandler):
-    def post(self):
-        self.response.write(cgi.escape(self.request.get('gcmtoken')))
-        self.response.write(cgi.escape(self.request.get('name')))
+        curr_user = curr_user[0]
+        curr_user.lat = float(jsonobject["lat"])
+        curr_user.lon = float(jsonobject["lon"])
+        curr_user.put()
 
 class Notifier(webapp2.RequestHandler):
     def post(self):
@@ -86,6 +85,6 @@ class Notifier(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/registeruser', RegisterUser),
     ('/gethelp', GetHelp),
-    ('/updateuserdata', UpdateUserData),
+    ('/updateuser', UpdateUserData),
     ('/notify', Notifier),
 ], debug=True)
