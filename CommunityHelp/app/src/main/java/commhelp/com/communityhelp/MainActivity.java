@@ -109,27 +109,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "I have registered" + mToken);
                 showLoginDialog();
 
-                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    try {
-                        throw new Exception("NASOL BOSULIQUE");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                JSONObject jo = new JSONObject();
-                try {
-                    jo.put("uid", mToken);
-                    jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
-                    jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
-                    jo.put("name", mName);
-                    jo.put("gender", mGender);
-                    jo.put("role", mRole);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
+                check_and_send();
             }
         };
 
@@ -338,8 +318,43 @@ public class MainActivity extends AppCompatActivity
             } else {
                 mGender = "female";
             }
-            Log.i(TAG, "yearOfBirth: " + mYearOfBirth + " is male: " + mGender);
+            Log.i(TAG, "role: " + mRole + " yearOfBirth: " + mYearOfBirth + " is male: " + mGender);
         }
+
+        check_and_send();
+    }
+    
+    public void check_and_send() {
+        if (mToken == "") {
+            // Registration not finished yet
+            return;
+        }
+        if (mName == "") { // TODO: name field in form should be required
+            // Form not completed yet
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            try {
+                throw new Exception("NASOL BOSULIQUE");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        JSONObject jo = new JSONObject();
+        try {
+            jo.put("uid", mToken);
+            jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
+            jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
+            jo.put("name", mName);
+            jo.put("gender", mGender);
+            jo.put("role", mRole);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "JASON "+jo.toString());
+        String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
     }
 
     public void onRadioButtonClicked(View view) {
