@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        executePost("https://localhost:8080/updateuser", jo.toString());
+        executePost("https://http://commhelpapp.appspot.com/registeruser", jo.toString());
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            executePost("https://localhost:8080/updateuser", jo.toString());
+            executePost("https://http://commhelpapp.appspot.com/updateuser", jo.toString());
         }
 
         @Override
@@ -256,14 +256,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public static String executePost(String targetURL, String urlParameters)
-    {
+    public static String executePost(String targetURL, String urlParameters) {
         URL url;
         HttpURLConnection connection = null;
         try {
             //Create connection
             url = new URL(targetURL);
-            connection = (HttpURLConnection)url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type",
                     "application/json");
@@ -272,13 +271,13 @@ public class MainActivity extends AppCompatActivity
                     Integer.toString(urlParameters.getBytes().length));
             connection.setRequestProperty("Content-Language", "en-US");
 
-            connection.setUseCaches (false);
+            connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
             //Send request
-            DataOutputStream wr = new DataOutputStream (
-                    connection.getOutputStream ());
+            DataOutputStream wr = new DataOutputStream(
+                    connection.getOutputStream());
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -288,7 +287,7 @@ public class MainActivity extends AppCompatActivity
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String line;
             StringBuffer response = new StringBuffer();
-            while((line = rd.readLine()) != null) {
+            while ((line = rd.readLine()) != null) {
                 response.append(line);
                 response.append('\r');
             }
@@ -302,9 +301,11 @@ public class MainActivity extends AppCompatActivity
 
         } finally {
 
-            if(connection != null) {
+            if (connection != null) {
                 connection.disconnect();
             }
+        }
+    }
 
     public void showLoginDialog() {
         // Create an instance of the dialog fragment and show it
