@@ -8,23 +8,52 @@ from google.appengine.ext import db
 import json
 from RegisteredUser import RegisteredUser
 
+from optparse import OptionParser
+import inspect
+
 class RegisterUser(webapp2.RequestHandler):
     def post(self):
+        jsonobject = json.loads(self.request.body)
         u = RegisteredUser(
-            name=choice(["John", "Mihaitza", "Bogdanel"]),
-            location = db.GeoPt(lat=45.0, lon=25.0),
+            name=jsonobject["name"],
+            lat = float(jsonobject["lat"]),
+            lon = float(jsonobject["lon"]),
             rank=0,
-            role="default"
+            role=jsonobject["role"]
         )
         u.put()
 
 class GetHelp(webapp2.RequestHandler):
+
     def post(self):
-        print "CORPUL MEU",self.request.body
-        self.response.headers['Content-Type'] = 'text/plain'
-        registered_users = db.GqlQuery(
-            "SELECT * FROM RegisteredUser WHERE rank = 0"
+        RADIUS = 100
+        jsonobject = json.loads(self.request.body)
+        # XXX: Super ultra mega hack because GQL doesn't allow for multiple
+        # filters that use <, >, <= or >=
+        registered_users = RegisteredUser.all().filter(
+            'lat >=', float(jsonobject["lat"]) - RADIUS
         )
+        registered_users = filter(
+            lambda u: (u.lat <= float(jsonobject["lat"]) + RADIUS
+                and u.lon >= float(jsonobject["lon"]) - RADIUS
+                and u.lon <= float(jsonobject["lon"]) + RADIUS),
+            registered_users)
+#         registered_users = db.GqlQuery(
+#             "SELECT * \
+#                 FROM RegisteredUser \
+#                 WHERE lat >= :1 and lat <= :1 and lon >= :2 and lon <= :2",
+#             float(jsonobject["lat"]) - RADIUS,
+#             float(jsonobject["lat"]) + RADIUS,
+#             float(jsonobject["lon"]) - RADIUS,
+#             float(jsonobject["lon"]) + RADIUS
+#         )
+#         registered_users = db.GqlQuery(
+#             "SELECT * \
+#                 FROM RegisteredUser \
+#                 WHERE lat >= :1",
+#             jsonobject["lat"]
+#         )
+#         print inspect.getmembers(db.GeoPt, predicate=inspect.ismethod)
         self.response.write("Registered users:\n")
         for u in registered_users:
             self.response.write(str(u)+'\n')

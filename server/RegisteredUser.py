@@ -4,7 +4,8 @@ from google.appengine.api import users
 
 class RegisteredUser(db.Model):
     name = db.StringProperty(required=True)
-    location = db.GeoPtProperty(required=True)
+    lat = db.FloatProperty(required=True)
+    lon = db.FloatProperty(required=True)
     rank = db.IntegerProperty(required=True)
     role = db.StringProperty(
         required=True,
@@ -13,6 +14,6 @@ class RegisteredUser(db.Model):
 
     def __str__(self):
         return "; ".join(
-            [self.name, str(self.location), str(self.rank), self.role]
+            [self.name, str(self.lat), str(self.lon), str(self.rank), self.role]
         )
 
