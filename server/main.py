@@ -75,9 +75,15 @@ class Notifier(webapp2.RequestHandler):
     def post(self):
         url = 'http://gcm-http.googleapis.com/gcm/send'
         to = str(cgi.escape(self.request.get('to')))
-        message = str(cgi.escape(self.request.get('message')))
+        name = str(cgi.escape(self.request.get('name')))
+        lat = str(cgi.escape(self.request.get('lat')))
+        lng = str(cgi.escape(self.request.get('lng')))
         data = {
-                "data": {'message': message},
+                "data": {
+                    "name": name,
+                    "lat": lat,
+                    "lng": lng
+                    },
                 "to": to
                 }
         headers = {
