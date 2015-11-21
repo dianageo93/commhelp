@@ -30,7 +30,7 @@
         </receiver>
 
         <service
-            android:name="commhelp.com.communityhelp.GcmListener"
+            android:name="commhelp.com.communityhelp.MyGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
