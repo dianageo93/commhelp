@@ -8,12 +8,34 @@
     android:background="@color/colorPrimary"
     tools:context="com.communityhelp.MainActivity">
 
-    <Button xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/button_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="send"
-        android:onClick="startService" />
+    <RelativeLayout android:id="@+id/RelativeLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <Button xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/button_volunteer"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:textSize="50sp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:text="@string/register_volunteer"
+            android:onClick="registerNewVolunteer" />
+
+        <Button xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/button_user"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:textSize="50sp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:text="@string/register_user"
+            android:layout_below = "@id/button_volunteer" />
+
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
