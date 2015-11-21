@@ -26,7 +26,7 @@ class RegisterUser(webapp2.RequestHandler):
         u = RegisteredUser(
             uid=jsonobject["uid"],
             name=jsonobject["name"],
-            sex=jsonobject["sex"] if "sex" in jsonobject else None,
+            gender=jsonobject["gender"] if "gender" in jsonobject else None,
             phone_number=db.PhoneNumber(jsonobject["phone_number"])
                 if "phone_number" in jsonobject else None,
             lat = float(jsonobject["lat"]),

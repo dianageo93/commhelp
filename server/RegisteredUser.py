@@ -5,7 +5,7 @@ from google.appengine.api import users
 class RegisteredUser(db.Model):
     uid = db.StringProperty(required=True)
     name = db.StringProperty(required=True)
-    sex = db.StringProperty()
+    gender = db.StringProperty()
     phone_number = db.PhoneNumberProperty()
     lat = db.FloatProperty(required=True)
     lon = db.FloatProperty(required=True)

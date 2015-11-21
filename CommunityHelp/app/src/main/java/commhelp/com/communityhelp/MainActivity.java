@@ -47,7 +47,7 @@ import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-                    LoginDialogFragment.LoginDialogListener {
+        LoginDialogFragment.LoginDialogListener {
 
     private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -56,6 +56,12 @@ public class MainActivity extends AppCompatActivity
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
     private String mToken = "";
+    private String mName = "";
+    private String mSex = "";
+    private String mPhoneNumber = "";
+    private String mRole = "";
+    private String mYearOfBirth = "";
+    private String mGender = "";
     private DialogFragment dialog;
 
     @Override
@@ -83,6 +89,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
+
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -94,6 +106,28 @@ public class MainActivity extends AppCompatActivity
                         .getString(QuickstartPreferences.TOKEN, "");
                 Log.i(TAG, "I have registered" + mToken);
                 showLoginDialog();
+
+                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        throw new Exception("NASOL BOSULIQUE");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                JSONObject jo = new JSONObject();
+                try {
+                    jo.put("uid", mToken);
+                    jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
+                    jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
+                    jo.put("name", mName);
+                    jo.put("gender", mGender);
+                    jo.put("role", mRole);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
             }
         };
 
@@ -106,40 +140,13 @@ public class MainActivity extends AppCompatActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Log.e(TAG, "NASOL BOSULIQUE");
+            try {
+                throw new Exception("NASOL BOSULIQUE");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, mLocationListener);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, mLocationListener);
-
-        Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        JSONObject jo = new JSONObject();
-        try {
-            if (mToken.equals("")) {
-                mToken = "cevafrumospentrutine";
-            }
-            jo.put("uid", mToken);
-            jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
-            jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
-            jo.put("name", "Georgica Fara Frica");
-            jo.put("sex", "Mascul");
-            jo.put("role", "default");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.i(TAG, "JASON "+jo.toString());
-        String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
-        Log.i(TAG, "RASPUNS"+ret);
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -313,19 +320,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         // User touched the dialog's positive button
-        String name = ((EditText) dialog.getDialog().findViewById(R.id.username))
+        mName = ((EditText) dialog.getDialog().findViewById(R.id.username))
                 .getText().toString();
-        Boolean isUser = ((RadioButton) dialog.getDialog().findViewById(R.id.radio_user))
-                .isChecked();
-        String phoneNumber = ((EditText) dialog.getDialog().findViewById(R.id.phone_number))
+        if (((RadioButton) dialog.getDialog().findViewById(R.id.radio_user)).isChecked()) {
+            mRole = "default";
+        } else {
+            mRole = "helper";
+        }
+        mPhoneNumber = ((EditText) dialog.getDialog().findViewById(R.id.phone_number))
                 .getText().toString();
-        Log.i(TAG, "name: " + name + " is user: " + isUser + " phone: " + phoneNumber);
-        if (isUser) {
-            String yearOfBirth = ((EditText) dialog.getDialog().findViewById(R.id.birth_year))
+        Log.i(TAG, "name: " + mName + " role: " + mRole + " phone: " + mPhoneNumber);
+        if (mRole.equals("default")) {
+            mYearOfBirth = ((EditText) dialog.getDialog().findViewById(R.id.birth_year))
                     .getText().toString();
-            Boolean isMale = ((RadioButton) dialog.getDialog().findViewById(R.id.radio_m))
-                    .isChecked();
-            Log.i(TAG, "yearOfBirth: " + yearOfBirth + " is male: " + isMale);
+            if (((RadioButton) dialog.getDialog().findViewById(R.id.radio_m)).isChecked()) {
+                mGender = "male";
+            } else {
+                mGender = "female";
+            }
+            Log.i(TAG, "yearOfBirth: " + mYearOfBirth + " is male: " + mGender);
         }
     }
 
