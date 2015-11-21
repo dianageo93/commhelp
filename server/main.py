@@ -1,3 +1,7 @@
+import cgi
+import json
+import urllib
+import urllib2
 import webapp2
 from random import choice
 from google.appengine.ext import db
@@ -29,8 +33,30 @@ class UpdateUserData(webapp2.RequestHandler):
     def post(self):
         pass
 
+class Register(webapp2.RequestHandler):
+    def post(self):
+        self.response.write(cgi.escape(self.request.get('gcmtoken')))
+        self.response.write(cgi.escape(self.request.get('name')))
+
+class Notifier(webapp2.RequestHandler):
+    def post(self):
+        url = 'http://gcm-http.googleapis.com/gcm/send'
+        to = str(cgi.escape(self.request.get('to')))
+        message = str(cgi.escape(self.request.get('message')))
+        data = {
+                "data": {'message': message},
+                "to": to
+                }
+        headers = {
+                "Content-Type":"application/json",
+                "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                }
+        req = urllib2.Request(url, json.dumps(data), headers)
+        response = urllib2.urlopen(req)
+
 app = webapp2.WSGIApplication([
     ('/registeruser', RegisterUser),
     ('/gethelp', GetHelp),
     ('/updateuserdata', UpdateUserData),
+    ('/notify', Notifier),
 ], debug=True)
