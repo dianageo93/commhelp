@@ -125,7 +125,11 @@ public class MainActivity extends AppCompatActivity
 
         JSONObject jo = new JSONObject();
         try {
-            jo.put("uid", mToken);jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
+            if (mToken.equals("")) {
+                mToken = "cevafrumospentrutine";
+            }
+            jo.put("uid", mToken);
+            jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
             jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
             jo.put("name", "Georgica Fara Frica");
             jo.put("sex", "Mascul");
@@ -133,7 +137,8 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String ret = executePost("https://http://commhelpapp.appspot.com/registeruser", jo.toString());
+        Log.i(TAG, "JASON "+jo.toString());
+        String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
         Log.i(TAG, "RASPUNS"+ret);
     }
 
@@ -150,8 +155,8 @@ public class MainActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            String ret = executePost("https://http://commhelpapp.appspot.com/updateuser", jo.toString());
-            Log.i(TAG, "RASPUNS"+ret);
+            //String ret = executePost("http://commhelpapp.appspot.com/updateuser", jo.toString());
+            //Log.i(TAG, "RASPUNS"+ret);
         }
 
         @Override
@@ -259,53 +264,41 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static String executePost(String targetURL, String urlParameters) {
-        URL url;
+        /*
         HttpURLConnection connection = null;
         try {
             //Create connection
-            url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
+            URL url = new URL(targetURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty( "Content-type", "application/json");
 
-            connection.setRequestProperty("Content-Length", "" +
-                    Integer.toString(urlParameters.getBytes().length));
-            connection.setRequestProperty("Content-Language", "en-US");
+            conn.setDoOutput(true);
 
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
 
-            //Send request
-            DataOutputStream wr = new DataOutputStream(
-                    connection.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
-
-            //Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            writer.write(urlParameters);
+            writer.flush();
             String line;
-            StringBuffer response = new StringBuffer();
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+            BufferedReader reader = new BufferedReader(new
+                    InputStreamReader(conn.getInputStream()));
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
             }
-            rd.close();
-            return response.toString();
-
+            writer.close();
+            reader.close();
+            return "pup";
         } catch (Exception e) {
-
             e.printStackTrace();
             return null;
-
         } finally {
-
             if (connection != null) {
                 connection.disconnect();
             }
         }
+        */
+        new HttpGetAsyncTask().execute(targetURL, urlParameters);
+        return "puta";
     }
 
     public void showLoginDialog() {
