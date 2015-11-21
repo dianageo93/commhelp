@@ -64,7 +64,9 @@ public class MainActivity extends AppCompatActivity
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
                         .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                Log.i(TAG, "I have registered");
+                String token = sharedPreferences
+                        .getString(QuickstartPreferences.TOKEN, "");
+                Log.i(TAG, "I have registered"+token);
             }
         };
 
