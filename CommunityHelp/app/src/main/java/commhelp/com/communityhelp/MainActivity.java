@@ -264,8 +264,7 @@ public class MainActivity extends AppCompatActivity
             url = new URL(targetURL);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type",
-                    "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
 
             connection.setRequestProperty("Content-Length", "" +
                     Integer.toString(urlParameters.getBytes().length));

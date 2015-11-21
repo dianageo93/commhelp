@@ -36,6 +36,12 @@ class RegisterUser(webapp2.RequestHandler):
         )
         u.put()
 
+        registered_users = RegisteredUser.all()
+        ret = ""
+        for u in registered_users:
+            ret = ret + str(u)
+        return ret
+
 class GetHelp(webapp2.RequestHandler):
     def post(self):
         RADIUS = 100
@@ -68,6 +74,12 @@ class UpdateUserData(webapp2.RequestHandler):
         curr_user.lat = float(jsonobject["lat"])
         curr_user.lon = float(jsonobject["lon"])
         curr_user.put()
+
+        registered_users = RegisteredUser.all()
+        ret = ""
+        for u in registered_users:
+            ret = ret + str(u)
+        return ret
 
 class Notifier(webapp2.RequestHandler):
     def post(self):
