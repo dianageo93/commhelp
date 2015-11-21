@@ -30,6 +30,18 @@ import android.widget.ProgressBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -39,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private static final float LOCATION_REFRESH_DISTANCE = (float) 0.1;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
+    private String mToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +85,9 @@ public class MainActivity extends AppCompatActivity
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
                         .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                String token = sharedPreferences
+                mToken = sharedPreferences
                         .getString(QuickstartPreferences.TOKEN, "");
-                Log.i(TAG, "I have registered" + token);
+                Log.i(TAG, "I have registered" + mToken);
             }
         };
 
@@ -101,6 +114,20 @@ public class MainActivity extends AppCompatActivity
                 LOCATION_REFRESH_DISTANCE, mLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                 LOCATION_REFRESH_DISTANCE, mLocationListener);
+
+        Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        JSONObject jo = new JSONObject();
+        try {
+            jo.put("uid", mToken);jo.put("lat", Double.toString(lastKnownLocation.getLatitude()));
+            jo.put("lon", Double.toString(lastKnownLocation.getLongitude()));
+            jo.put("name", "Georgica Fara Frica");
+            jo.put("sex", "Mascul");
+            jo.put("role", "default");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        executePost("https://localhost:8080/updateuser", jo.toString());
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -108,7 +135,15 @@ public class MainActivity extends AppCompatActivity
         public void onLocationChanged(final Location location) {
             // Send new location to the server
             Log.i(TAG, "M-am mutat la tara");
-            
+            JSONObject jo = new JSONObject();
+            try {
+                jo.put("uid", mToken);
+                jo.put("lat", Double.toString(location.getLatitude()));
+                jo.put("lon", Double.toString(location.getLongitude()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            executePost("https://localhost:8080/updateuser", jo.toString());
         }
 
         @Override
@@ -213,5 +248,57 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public static String executePost(String targetURL, String urlParameters)
+    {
+        URL url;
+        HttpURLConnection connection = null;
+        try {
+            //Create connection
+            url = new URL(targetURL);
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+
+            connection.setRequestProperty("Content-Length", "" +
+                    Integer.toString(urlParameters.getBytes().length));
+            connection.setRequestProperty("Content-Language", "en-US");
+
+            connection.setUseCaches (false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            //Send request
+            DataOutputStream wr = new DataOutputStream (
+                    connection.getOutputStream ());
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+
+            //Get Response
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuffer response = new StringBuffer();
+            while((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return response.toString();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+
+        } finally {
+
+            if(connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 }
