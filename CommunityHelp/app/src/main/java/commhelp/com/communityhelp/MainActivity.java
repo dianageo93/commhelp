@@ -36,15 +36,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoginDialogFragment.LoginDialogListener {
@@ -53,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final long LOCATION_REFRESH_TIME = 10;
     private static final float LOCATION_REFRESH_DISTANCE = (float) 0.1;
+    private static final String PREFS_NAME = "MyPrefsFile";
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
     private String mToken = "";
@@ -97,21 +89,37 @@ public class MainActivity extends AppCompatActivity
                 LOCATION_REFRESH_DISTANCE, mLocationListener);
 
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-                mToken = sharedPreferences
-                        .getString(QuickstartPreferences.TOKEN, "");
-                Log.i(TAG, "I have registered" + mToken);
-                showLoginDialog();
-
-                check_and_send();
-            }
-        };
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
+        if (sharedPreferences.getString(QuickstartPreferences.NAME, "").equals("")) {
+            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(context);
+                    mToken = sharedPreferences
+                            .getString(QuickstartPreferences.TOKEN, "");
+                    Log.i(TAG, "I have registered" + mToken);
+                    checkAndSend();
+                }
+            };
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+            showLoginDialog();
+        }
+        else {
+            mName = sharedPreferences.getString(QuickstartPreferences.NAME, "");
+            mRole = sharedPreferences.getString(QuickstartPreferences.ROLE, "");
+            mPhoneNumber = sharedPreferences.getString(QuickstartPreferences.PHONENUMBER, "");
+            mYearOfBirth = sharedPreferences.getString(QuickstartPreferences.YEAROFBIRTH, "");
+            mGender = sharedPreferences.getString(QuickstartPreferences.GENDER, "");
+            mToken = sharedPreferences.getString(QuickstartPreferences.TOKEN, "");
+            Log.i(TAG, mName);
+            Log.i(TAG,mRole);
+            Log.i(TAG, mPhoneNumber);
+            Log.i(TAG, mYearOfBirth);
+            Log.i(TAG, mGender);
+            Log.i(TAG, mToken);
+        }
 
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
@@ -161,8 +169,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+
     }
 
     @Override
@@ -171,6 +178,17 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        // Commit the edits!
+        editor.commit();
+    }
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -250,39 +268,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static String executePost(String targetURL, String urlParameters) {
-        /*
-        HttpURLConnection connection = null;
-        try {
-            //Create connection
-            URL url = new URL(targetURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty( "Content-type", "application/json");
-
-            conn.setDoOutput(true);
-
-            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-
-            writer.write(urlParameters);
-            writer.flush();
-            String line;
-            BufferedReader reader = new BufferedReader(new
-                    InputStreamReader(conn.getInputStream()));
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            writer.close();
-            reader.close();
-            return "pup";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        */
         new HttpGetAsyncTask().execute(targetURL, urlParameters);
         return "puta";
     }
@@ -320,15 +305,15 @@ public class MainActivity extends AppCompatActivity
             Log.i(TAG, "role: " + mRole + " yearOfBirth: " + mYearOfBirth + " is male: " + mGender);
         }
 
-        check_and_send();
+        checkAndSend();
     }
 
-    public void check_and_send() {
-        if (mToken == "") {
+    public void checkAndSend() {
+        if (mToken.equals("")) {
             // Registration not finished yet
             return;
         }
-        if (mName == "") { // TODO: name field in form should be required
+        if (mName.equals("")) { // TODO: name field in form should be required
             // Form not completed yet
             return;
         }
@@ -340,6 +325,14 @@ public class MainActivity extends AppCompatActivity
             }
             return;
         }
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
+        editor.putString(QuickstartPreferences.TOKEN, mToken);
+        editor.putString(QuickstartPreferences.NAME, mName);
+        editor.putString(QuickstartPreferences.ROLE, mRole);
+        editor.putString(QuickstartPreferences.PHONENUMBER, mPhoneNumber);
+        editor.putString(QuickstartPreferences.YEAROFBIRTH, mYearOfBirth);
+        editor.putString(QuickstartPreferences.GENDER, mGender);
+        editor.commit();
         Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         JSONObject jo = new JSONObject();
         try {
