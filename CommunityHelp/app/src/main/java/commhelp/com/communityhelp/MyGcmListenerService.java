@@ -85,21 +85,20 @@ public class MyGcmListenerService extends GcmListenerService {
         stackBuilder.addParentStack(AcceptActivity.class);
         stackBuilder.addNextIntent(intent);
         PendingIntent pendingIntent = stackBuilder
-                .getPendingIntent(requestCodeAccept, PendingIntent.FLAG_UPDATE_CURRENT);
+                .getPendingIntent(requestCodeAccept, PendingIntent.FLAG_CANCEL_CURRENT);
 
         notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(data.getString("victim_uid"), requestCodeAccept,
+        notificationManager.notify(data.getString("uid"), requestCodeAccept,
                 notificationBuilder.build());
     }
 
     public void cancelRequests(Bundle data) {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.i(TAG, "STERGGGG: " + data.getString("victim_uid"));
         notificationManager.cancel(data.getString("victim_uid"), requestCodeAccept);
         notificationManager.cancel(data.getString("victim_uid"), requestCodeMap);
     }
