@@ -8,6 +8,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -31,6 +33,7 @@ public class MyGcmListenerService extends GcmListenerService {
         if (type.equals("helprequest")) {
             openMapWithLocation(data);
         } else if (type.equals("acceptrequest")) {
+            Log.i("TAG", "sunt bine");
             openAcceptRequestActivity(data);
         }
 
@@ -66,20 +69,22 @@ public class MyGcmListenerService extends GcmListenerService {
     }
 
     public void openAcceptRequestActivity(Bundle data) {
-        Intent intent = new Intent(this, AcceptActivity.class);
-        intent.setAction("commhelp.com.communityhelp.ACCEPT");
-        intent.addCategory("android.intent.category.DEFAULT");
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCodeAccept, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.emergency)
                 .setContentTitle("New accept request notification")
                 .setContentText("Will you help " + data.getString("name") +"?")
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setSound(defaultSoundUri);
+
+        Intent intent = new Intent(this, AcceptActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(AcceptActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder
+                .getPendingIntent(requestCodeAccept, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notificationBuilder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
