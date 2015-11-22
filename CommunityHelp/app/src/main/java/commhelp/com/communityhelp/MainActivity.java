@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final long LOCATION_REFRESH_TIME = 10;
+    private static final long LOCATION_REFRESH_TIME = 5 * 60 * 1000;
     private static final float LOCATION_REFRESH_DISTANCE = (float) 0.1;
     private static final String PREFS_NAME = "MyPrefsFile";
     private BroadcastReceiver mRegistrationBroadcastReceiver;
