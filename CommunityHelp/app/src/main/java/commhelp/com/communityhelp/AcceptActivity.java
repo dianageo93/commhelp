@@ -25,6 +25,8 @@ public class AcceptActivity extends Activity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_accept);
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
         final String mToken = sharedPreferences.getString(QuickstartPreferences.TOKEN, "");
+        final String mName = sharedPreferences.getString(QuickstartPreferences.NAME, "");
+//        final String mRank = sharedPreferences.getString(QuickstartPreferences., "");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,6 +37,8 @@ public class AcceptActivity extends Activity {
                 try {
                     jo.put("uid", mToken);
                     jo.put("victim_uid", getIntent().getStringExtra("victim_uid"));
+                    jo.put("name", mName);
+                    jo.put("level", "3");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
