@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
                 JSONObject jo = new JSONObject();
                 try {
                     jo.put("uid", mToken);
+                    jo.put("name", mName);
                     jo.put("lat", Double.toString(location.getLatitude()));
                     jo.put("lon", Double.toString(location.getLongitude()));
                 } catch (JSONException e) {
@@ -110,13 +111,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, mLocationListener);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, mLocationListener);
-
-
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
         if (sharedPreferences.getString(QuickstartPreferences.NAME, "").equals("")) {
             mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -140,12 +134,11 @@ public class MainActivity extends AppCompatActivity
             mYearOfBirth = sharedPreferences.getString(QuickstartPreferences.YEAROFBIRTH, "");
             mGender = sharedPreferences.getString(QuickstartPreferences.GENDER, "");
             mToken = sharedPreferences.getString(QuickstartPreferences.TOKEN, "");
-            Log.i(TAG, mName);
-            Log.i(TAG, mRole);
-            Log.i(TAG, mPhoneNumber);
-            Log.i(TAG, mYearOfBirth);
-            Log.i(TAG, mGender);
-            Log.i(TAG, mToken);
+
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, mLocationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, mLocationListener);
         }
 
         if (checkPlayServices()) {
@@ -171,6 +164,9 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onLocationChanged(final Location location) {
             JSONObject jo = new JSONObject();
+            if (mToken.equals("")) {
+                return;
+            }
             try {
                 jo.put("uid", mToken);
                 jo.put("lat", Double.toString(location.getLatitude()));
@@ -392,6 +388,10 @@ public class MainActivity extends AppCompatActivity
         }
         Log.i(TAG, "JASON " + jo.toString());
         String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
     }
 
     public void onRadioButtonClicked(View view) {

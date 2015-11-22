@@ -7,6 +7,7 @@ from random import choice
 from google.appengine.ext import db
 import json
 from RegisteredUser import RegisteredUser
+from NotificationGroup import NotificationGroup
 
 class RegisterUser(webapp2.RequestHandler):
     def post(self):
@@ -54,13 +55,31 @@ class GetHelp(webapp2.RequestHandler):
         if not registered_users:
             return
 
-        ng = NotificationGroup(jsonobject["uid"])
+        ng = NotificationGroup(victim=jsonobject["uid"])
         for u in registered_users:
             ng.uids.append(u.uid)
         ng.put()
 
         self.response.write("Registered users:\n")
         for u in registered_users:
+            if u.uid == jsonobject["uid"]:
+                continue
+            url = 'http://gcm-http.googleapis.com/gcm/send'
+            data = {
+                    "data": {
+                        "uid": jsonobject["uid"],
+                        "name": jsonobject["name"],
+                        "lat": jsonobject["lat"],
+                        "lng": jsonobject["lon"]
+                        },
+                    "to": u.uid
+                    }
+            headers = {
+                    "Content-Type":"application/json",
+                    "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                    }
+            req = urllib2.Request(url, json.dumps(data), headers)
+            response = urllib2.urlopen(req)
             self.response.write(str(u)+'\n')
 
 # JSON has uid, victim_uid
@@ -73,7 +92,7 @@ class GiveHelp(webapp2.RequestHandler):
             return
 
         for u in ng.uids:
-            if u != jsonobject["uid"]
+            if u != jsonobject["uid"]:
                 # TODO: send message to all the volunteers telling them that they
                 # are not needed any more
                 pass
