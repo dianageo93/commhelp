@@ -1,5 +1,6 @@
 import cgi
 import json
+import logging
 import urllib
 import urllib2
 import webapp2
@@ -65,41 +66,57 @@ class GetHelp(webapp2.RequestHandler):
         ng.put()
 
         self.response.write("Registered users:\n")
-        for u in registered_users:
-            if u.uid == jsonobject["uid"]:
-                continue
-            url = 'http://gcm-http.googleapis.com/gcm/send'
-            data = {
-                    "data": {
-                        "uid": jsonobject["uid"],
-                        "name": jsonobject["name"],
-                        "lat": jsonobject["lat"],
-                        "lng": jsonobject["lon"]
-                        },
-                    "to": u.uid
-                    }
-            headers = {
-                    "Content-Type":"application/json",
-                    "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
-                    }
-            req = urllib2.Request(url, json.dumps(data), headers)
-            response = urllib2.urlopen(req)
-            self.response.write(str(u)+'\n')
+        request_types = ['helprequest', 'acceptrequest']
+        for request_type in request_types:
+            for u in registered_users:
+                if u.uid == jsonobject["uid"]:
+                    continue
+                url = 'http://gcm-http.googleapis.com/gcm/send'
+                data = {
+                        "data": {
+                            "type": request_type,
+                            "uid": jsonobject["uid"],
+                            "name": jsonobject["name"],
+                            "lat": jsonobject["lat"],
+                            "lng": jsonobject["lon"]
+                            },
+                        "to": u.uid
+                        }
+                headers = {
+                        "Content-Type":"application/json",
+                        "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                        }
+                req = urllib2.Request(url, json.dumps(data), headers)
+                response = urllib2.urlopen(req)
+                self.response.write(str(u)+'\n')
 
 # JSON has uid, victim_uid
 class GiveHelp(webapp2.RequestHandler):
     def post(self):
         jsonobject = json.loads(self.request.body)
-        ng = NotificationGroup.all().filter("victim=", jsonobject["victim_uid"])
+        ng = NotificationGroup.all().get()
 
         if not ng:
             return
 
         for u in ng.uids:
             if u != jsonobject["uid"]:
-                # TODO: send message to all the volunteers telling them that they
+                # send message to all the volunteers telling them that they
                 # are not needed any more
-                pass
+                url = 'http://gcm-http.googleapis.com/gcm/send'
+                data = {
+                        "data": {
+                            "type": "cancelrequest",
+                            "victim_uid": jsonobject["victim_uid"]
+                            },
+                        "to": u
+                        }
+                headers = {
+                        "Content-Type":"application/json",
+                        "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                        }
+                req = urllib2.Request(url, json.dumps(data), headers)
+                response = urllib2.urlopen(req)
 
         ng.delete()
 

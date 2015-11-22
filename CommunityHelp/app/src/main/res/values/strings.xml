@@ -16,4 +16,5 @@
     <string name="dialog_gender">Gender:</string>
     <string name="dialog_male">M</string>
     <string name="dialog_female">F</string>
+    <string name="title_activity_accept">AcceptActivity</string>
 </resources>
