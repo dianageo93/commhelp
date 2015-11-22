@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 
 public class StatsDialogFragment extends DialogFragment {
 
@@ -34,7 +36,7 @@ public class StatsDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
-                    + " must implement RatingDialogListener");
+                    + " must implement StatsDialogListener");
         }
     }
 
@@ -51,6 +53,26 @@ public class StatsDialogFragment extends DialogFragment {
                         dialog.dismiss();
                     }
                 });
+        /*
+        ImageView badge = (ImageView) getActivity().findViewById(R.id.badge);
+        int badge_src = 0;
+        String mLevel = "3";
+        if (mLevel.equals("1")) {
+            badge_src = R.drawable.rookie1;
+        }
+        if (mLevel.equals("2")) {
+            badge_src = R.drawable.guardianangle2;
+        }
+        if (mLevel.equals("3")) {
+            badge_src = R.drawable.saviour3;
+        }
+        if (mLevel.equals("4")) {
+            badge_src = R.drawable.superhero4;
+        }
+        badge.setImageResource(badge_src);
+        RatingBar stars = (RatingBar) getActivity().findViewById(R.id.ratingBar);
+        stars.setRating(4);
+        */
         return builder.create();
     }
 

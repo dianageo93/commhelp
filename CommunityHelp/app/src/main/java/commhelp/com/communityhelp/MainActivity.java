@@ -51,7 +51,8 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         LoginDialogFragment.LoginDialogListener, MoreDataDialogFragment.MoreDataDialogListener,
-        RatingDialogFragment.RatingDialogListener {
+        RatingDialogFragment.RatingDialogListener,
+        StatsDialogFragment.StatsDialogListener {
 
     private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -308,23 +309,7 @@ public class MainActivity extends AppCompatActivity
             if (mRole.equals("helper")) {
                 dialog = new StatsDialogFragment();
                 dialog.show(getSupportFragmentManager(), "StatsDialogFragment");
-                ImageView badge = (ImageView) findViewById(R.id.badge);
-                int badge_src = 0;
-                if (mLevel.equals("1")) {
-                    badge_src = R.drawable.rookie1;
-                }
-                if (mLevel.equals("2")) {
-                    badge_src = R.drawable.guardianangle2;
-                }
-                if (mLevel.equals("3")) {
-                    badge_src = R.drawable.saviour3;
-                }
-                if (mLevel.equals("4")) {
-                    badge_src = R.drawable.superhero4;
-                }
-                badge.setImageResource(badge_src);
-                RatingBar stars = (RatingBar) findViewById(R.id.ratingBar);
-                // stars.setRating();
+
             }
             if (mRole.equals("default")) {
                 dialog = new RatingDialogFragment();
