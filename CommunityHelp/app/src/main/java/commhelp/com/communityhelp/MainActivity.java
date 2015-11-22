@@ -31,11 +31,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -307,14 +309,40 @@ public class MainActivity extends AppCompatActivity
                 dialog = new StatsDialogFragment();
                 dialog.show(getSupportFragmentManager(), "StatsDialogFragment");
                 ImageView badge = (ImageView) findViewById(R.id.badge);
-                int badge_src;
-                if (mL)
+                int badge_src = 0;
+                if (mLevel.equals("1")) {
+                    badge_src = R.drawable.rookie1;
+                }
+                if (mLevel.equals("2")) {
+                    badge_src = R.drawable.guardianangle2;
+                }
+                if (mLevel.equals("3")) {
+                    badge_src = R.drawable.saviour3;
+                }
+                if (mLevel.equals("4")) {
+                    badge_src = R.drawable.superhero4;
+                }
                 badge.setImageResource(badge_src);
+                RatingBar stars = (RatingBar) findViewById(R.id.ratingBar);
+                // stars.setRating();
             }
             if (mRole.equals("default")) {
                 dialog = new RatingDialogFragment();
                 dialog.show(getSupportFragmentManager(), "RatingDialogFragment");
 
+                /*Button submit = (Button) findViewById()
+                JSONObject jo = new JSONObject();
+                RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+                SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
+                try {
+                    jo.put("source_uid", mToken);
+                    jo.put("volunteer_uid", sharedPreferences.getString("volunteer_uid", ""));
+                    jo.put("rank", ratingBar.getRating());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String ret = executePost("http://commhelpapp.appspot.com/givereview", jo.toString());
+                */
             }
         }
 
@@ -325,7 +353,7 @@ public class MainActivity extends AppCompatActivity
 
     public static String executePost(String targetURL, String urlParameters) {
         new HttpGetAsyncTask().execute(targetURL, urlParameters);
-        return "puta";
+        return "";
     }
 
     public void showLoginDialog() {
