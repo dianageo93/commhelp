@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity
                 dialog.show(getSupportFragmentManager(), "StatsDialogFragment");
                 ImageView badge = (ImageView) findViewById(R.id.badge);
                 int badge_src;
+                if (mL)
                 badge.setImageResource(badge_src);
             }
             if (mRole.equals("default")) {
