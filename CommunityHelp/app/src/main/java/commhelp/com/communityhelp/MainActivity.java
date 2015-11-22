@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 executePost("http://commhelpapp.appspot.com/gethelp", jo.toString());
-                Snackbar.make(view, "Your request is being sent!", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Hold on! Help is on the way!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
