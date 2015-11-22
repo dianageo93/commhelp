@@ -18,6 +18,7 @@ public class MyGcmListenerService extends GcmListenerService {
     private static final String TAG = "MyGcmListenerService";
     private static final int requestCodeMap = 0;
     private static final int requestCodeAccept = 1;
+    private static final int requestCodeHelpAccepted = 2;
 
     /**
      * Called when message is received.
@@ -127,5 +128,10 @@ public class MyGcmListenerService extends GcmListenerService {
                 notificationBuilder.setSmallIcon(R.drawable.superhero4);
                 break;
         }
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(data.getString("uid"), requestCodeHelpAccepted,
+                notificationBuilder.build());
     }
 }

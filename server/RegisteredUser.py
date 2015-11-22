@@ -18,7 +18,6 @@ class RegisteredUser(db.Model):
         required=True,
         choices=set(["default", "helper"])
     )
-    badge_id = db.IntegerProperty(required=True)
 
     def __str__(self):
         return "; ".join(

@@ -37,8 +37,7 @@ class RegisterUser(webapp2.RequestHandler):
             lon = float(jsonobject["lon"]),
             rank=0,
             count_reviews=0,
-            role=jsonobject["role"],
-            badge_src=0
+            role=jsonobject["role"]
         )
         u.put()
 
@@ -154,8 +153,7 @@ class GiveReview(webapp2.RequestHandler):
         volunteer = volunteer[0]
         self.response.write("Am gasit voluntar "+str(volunteer)+'\n')
         volunteer.count_reviews = volunteer.count_reviews + 1
-        volunteer.rank = float(jsonobject["rank"])
-            if volunteer.rank == 0
+        volunteer.rank = float(jsonobject["rank"]) if volunteer.rank == 0 \
             else (volunteer.rank + jsonobject["rank"]) / volunteer.count_reviews
         volunteer.put()
 
