@@ -1,5 +1,7 @@
 package commhelp.com.communityhelp;
 
+import android.*;
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -30,8 +33,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +61,11 @@ public class MainActivity extends AppCompatActivity
     private String mYearOfBirth = "";
     private String mGender = "";
     private DialogFragment dialog;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +78,24 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                if (ActivityCompat.checkSelfPermission(view.getContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "NO KNOWN LOCATION");
+                    return;
+                }
+                Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                JSONObject jo = new JSONObject();
+                try {
+                    jo.put("uid", mToken);
+                    jo.put("lat", Double.toString(location.getLatitude()));
+                    jo.put("lon", Double.toString(location.getLongitude()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                executePost("http://commhelpapp.appspot.com/gethelp", jo.toString());
+                Snackbar.make(view, "Your request is being sent!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -105,8 +133,7 @@ public class MainActivity extends AppCompatActivity
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                     new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
             showLoginDialog();
-        }
-        else {
+        } else {
             mName = sharedPreferences.getString(QuickstartPreferences.NAME, "");
             mRole = sharedPreferences.getString(QuickstartPreferences.ROLE, "");
             mPhoneNumber = sharedPreferences.getString(QuickstartPreferences.PHONENUMBER, "");
@@ -114,7 +141,7 @@ public class MainActivity extends AppCompatActivity
             mGender = sharedPreferences.getString(QuickstartPreferences.GENDER, "");
             mToken = sharedPreferences.getString(QuickstartPreferences.TOKEN, "");
             Log.i(TAG, mName);
-            Log.i(TAG,mRole);
+            Log.i(TAG, mRole);
             Log.i(TAG, mPhoneNumber);
             Log.i(TAG, mYearOfBirth);
             Log.i(TAG, mGender);
@@ -127,7 +154,7 @@ public class MainActivity extends AppCompatActivity
             startService(intent);
         }
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             try {
                 throw new Exception("NASOL BOSULIQUE");
             } catch (Exception e) {
@@ -135,13 +162,14 @@ public class MainActivity extends AppCompatActivity
             }
             return;
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    // TODO: this needs to be a service
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            // Send new location to the server
             JSONObject jo = new JSONObject();
             try {
                 jo.put("uid", mToken);
@@ -179,8 +207,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://commhelp.com.communityhelp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
 
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
@@ -188,7 +229,11 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = settings.edit();
         // Commit the edits!
         editor.commit();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
+
     /**
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
@@ -317,7 +362,7 @@ public class MainActivity extends AppCompatActivity
             // Form not completed yet
             return;
         }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             try {
                 throw new Exception("NASOL BOSULIQUE");
             } catch (Exception e) {
@@ -345,7 +390,7 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "JASON "+jo.toString());
+        Log.i(TAG, "JASON " + jo.toString());
         String ret = executePost("http://commhelpapp.appspot.com/registeruser", jo.toString());
     }
 
@@ -354,7 +399,7 @@ public class MainActivity extends AppCompatActivity
         RadioGroup gender = (RadioGroup) dialog.getDialog().findViewById(R.id.radio_gender);
         EditText birthYear = (EditText) dialog.getDialog().findViewById(R.id.birth_year);
         // Check which radio button was clicked
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.radio_user:
                 if (checked) {
                     gender.setVisibility(View.VISIBLE);
@@ -368,5 +413,25 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://commhelp.com.communityhelp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 }
