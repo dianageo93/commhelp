@@ -34,8 +34,9 @@ public class MyGcmListenerService extends GcmListenerService {
             openMapWithLocation(data);
         } else if (type.equals("acceptrequest")) {
             openAcceptRequestActivity(data);
+        } else if (type.equals("cancelrequest")) {
+            cancelRequests(data);
         }
-
     }
 
     public void openMapWithLocation(Bundle data) {
@@ -64,7 +65,8 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(requestCodeMap, notificationBuilder.build());
+        notificationManager.notify(data.getString("uid"),
+                requestCodeMap, notificationBuilder.build());
     }
 
     public void openAcceptRequestActivity(Bundle data) {
@@ -90,6 +92,15 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(requestCodeAccept, notificationBuilder.build());
+        notificationManager.notify(data.getString("victim_uid"), requestCodeAccept,
+                notificationBuilder.build());
+    }
+
+    public void cancelRequests(Bundle data) {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.i(TAG, "STERGGGG: " + data.getString("victim_uid"));
+        notificationManager.cancel(data.getString("victim_uid"), requestCodeAccept);
+        notificationManager.cancel(data.getString("victim_uid"), requestCodeMap);
     }
 }
