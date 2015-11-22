@@ -9,4 +9,5 @@ public class QuickstartPreferences {
     public static final String PHONENUMBER = "phonenumber";
     public static final String YEAROFBIRTH = "yearofbirth";
     public static final String GENDER = "gender";
+    public static final String LEVEL = "level";
 }

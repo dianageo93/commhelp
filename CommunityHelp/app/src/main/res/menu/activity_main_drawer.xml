@@ -9,7 +9,7 @@
     </group>
 
     <item android:title="Badges">
-        <menu>
+        <menu android:id="@+id/badge_menu">
             <!--<item-->
                 <!--android:id="@+id/nav_share"-->
                 <!--android:icon="@drawable/ic_menu_share"-->

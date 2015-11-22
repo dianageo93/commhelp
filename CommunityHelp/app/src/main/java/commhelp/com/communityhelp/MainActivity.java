@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,6 +32,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
     private String mToken = "";
+    private String mLevel = "";
     private String mName = "";
     private String mSex = "";
     private String mPhoneNumber = "";
@@ -134,6 +139,9 @@ public class MainActivity extends AppCompatActivity
             mYearOfBirth = sharedPreferences.getString(QuickstartPreferences.YEAROFBIRTH, "");
             mGender = sharedPreferences.getString(QuickstartPreferences.GENDER, "");
             mToken = sharedPreferences.getString(QuickstartPreferences.TOKEN, "");
+            mLevel = sharedPreferences.getString(QuickstartPreferences.LEVEL, "");
+
+            setIcon(mLevel);
 
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
                     LOCATION_REFRESH_DISTANCE, mLocationListener);
@@ -294,20 +302,6 @@ public class MainActivity extends AppCompatActivity
             dialog.show(getSupportFragmentManager(), "MoreInfoDialogFragment");
         }
 
-//        if (id == R.id.nav_camera) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -378,7 +372,9 @@ public class MainActivity extends AppCompatActivity
         editor.putString(QuickstartPreferences.PHONENUMBER, mPhoneNumber);
         editor.putString(QuickstartPreferences.YEAROFBIRTH, mYearOfBirth);
         editor.putString(QuickstartPreferences.GENDER, mGender);
+        editor.putString(QuickstartPreferences.LEVEL, "1");
         editor.commit();
+        setIcon(mLevel);
         Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         JSONObject jo = new JSONObject();
         try {
@@ -448,5 +444,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDiscardDetails(View view) {
 
+    }
+
+    public void setIcon(String level) {
+        View layout = LayoutInflater.from(this).inflate(R.layout.nav_header_main, null);
+        ImageView view = (ImageView) layout.findViewById(R.id.imageView);
+        if (view == null) {
+            Log.i(TAG, "imageView null");
+            return;
+        }
+        view.setBackgroundResource(R.drawable.rookie1);
     }
 }

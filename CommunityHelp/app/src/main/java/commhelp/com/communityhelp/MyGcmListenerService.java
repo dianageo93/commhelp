@@ -41,6 +41,8 @@ public class MyGcmListenerService extends GcmListenerService {
             cancelRequests(data);
         } else if (type.equals("helponitsway")) {
             helpOnItsWay(data);
+        } else if (type.equals("updatelevel")) {
+            updateMyLevel(data);
         }
     }
 
@@ -139,5 +141,10 @@ public class MyGcmListenerService extends GcmListenerService {
 
         notificationManager.notify(data.getString("uid"), requestCodeHelpAccepted,
                 notificationBuilder.build());
+    }
+
+    public void updateMyLevel(Bundle data) {
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
+        editor.putString(QuickstartPreferences.LEVEL, data.getString("level"));
     }
 }
