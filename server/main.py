@@ -169,6 +169,7 @@ class GiveReview(webapp2.RequestHandler):
         data = {
                 "data": {
                     "type": "updatelevel",
+                    "rank": str(volunteer.rank),
                     "level": str(level)
                     },
                 "to": jsonobject["volunteer_uid"]
