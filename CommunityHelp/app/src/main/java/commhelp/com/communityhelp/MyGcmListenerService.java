@@ -33,7 +33,6 @@ public class MyGcmListenerService extends GcmListenerService {
         if (type.equals("helprequest")) {
             openMapWithLocation(data);
         } else if (type.equals("acceptrequest")) {
-            Log.i("TAG", "sunt bine");
             openAcceptRequestActivity(data);
         }
 
@@ -78,6 +77,8 @@ public class MyGcmListenerService extends GcmListenerService {
                 .setSound(defaultSoundUri);
 
         Intent intent = new Intent(this, AcceptActivity.class);
+        intent.putExtra("victim_uid", data.getString("uid"));
+        intent.putExtra("victim_name", data.getString("name"));
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(AcceptActivity.class);
         stackBuilder.addNextIntent(intent);
