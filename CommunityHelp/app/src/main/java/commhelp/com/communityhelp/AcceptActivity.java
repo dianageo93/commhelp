@@ -34,7 +34,6 @@ public class AcceptActivity extends Activity {
                 }
                 try {
                     jo.put("uid", mToken);
-
                     jo.put("victim_uid", getIntent().getStringExtra("victim_uid"));
                 } catch (JSONException e) {
                     e.printStackTrace();

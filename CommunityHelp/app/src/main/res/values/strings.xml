@@ -8,6 +8,8 @@
     <string name="button_message">Help!</string>
     <string name="dialog_login">Onboarding</string>
     <string name="dialog_register">Register</string>
+    <string name="dialog_submit">Submit</string>
+    <string name="dialog_discard">Discard</string>
     <string name="username">Name</string>
     <string name="dialog_user">User</string>
     <string name="dialog_volunteer">Volunteer</string>
@@ -16,5 +18,9 @@
     <string name="dialog_gender">Gender:</string>
     <string name="dialog_male">M</string>
     <string name="dialog_female">F</string>
+    <string name="height">Height</string>
+    <string name="email">Email</string>
+    <string name="dialog_mother">Mother ? ?</string>
+    <string name="health_problems">Health problems ?</string>
     <string name="title_activity_accept">AcceptActivity</string>
 </resources>
