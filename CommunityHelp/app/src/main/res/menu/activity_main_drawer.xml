@@ -6,6 +6,10 @@
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Update profile" />
+        <item
+            android:id="@+id/stats"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Rating" />
     </group>
 
     <item android:title="Badges">
@@ -20,5 +24,8 @@
                 <!--android:title="Send" />-->
         </menu>
     </item>
+
+
+
 
 </menu>

@@ -48,7 +48,8 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        LoginDialogFragment.LoginDialogListener, MoreDataDialogFragment.MoreDataDialogListener {
+        LoginDialogFragment.LoginDialogListener, MoreDataDialogFragment.MoreDataDialogListener,
+        RatingDialogFragment.RatingDialogListener {
 
     private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -300,6 +301,20 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_manage) {
             dialog = new MoreDataDialogFragment();
             dialog.show(getSupportFragmentManager(), "MoreInfoDialogFragment");
+        }
+        if (id == R.id.stats) {
+            if (mRole.equals("helper")) {
+                dialog = new StatsDialogFragment();
+                dialog.show(getSupportFragmentManager(), "StatsDialogFragment");
+                ImageView badge = (ImageView) findViewById(R.id.badge);
+                int badge_src;
+                badge.setImageResource(badge_src);
+            }
+            if (mRole.equals("default")) {
+                dialog = new RatingDialogFragment();
+                dialog.show(getSupportFragmentManager(), "RatingDialogFragment");
+
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
