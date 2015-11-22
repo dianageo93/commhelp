@@ -89,16 +89,29 @@ class GetHelp(webapp2.RequestHandler):
 class GiveHelp(webapp2.RequestHandler):
     def post(self):
         jsonobject = json.loads(self.request.body)
-        ng = NotificationGroup.all().filter("victim=", jsonobject["victim_uid"])
+        ng = NotificationGroup.all().filter("victim=", jsonobject["victim_uid"]).get()
 
         if not ng:
             return
 
         for u in ng.uids:
             if u != jsonobject["uid"]:
-                # TODO: send message to all the volunteers telling them that they
+                # send message to all the volunteers telling them that they
                 # are not needed any more
-                pass
+                url = 'http://gcm-http.googleapis.com/gcm/send'
+                data = {
+                        "data": {
+                            "type": "cancelrequest",
+                            "victim_uid": jsonobject["victim_uid"]
+                            },
+                        "to": u
+                        }
+                headers = {
+                        "Content-Type":"application/json",
+                        "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                        }
+                req = urllib2.Request(url, json.dumps(data), headers)
+                response = urllib2.urlopen(req)
 
         ng.delete()
 
