@@ -129,11 +129,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // TODO: this needs to be a service
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
             // Send new location to the server
-            Log.i(TAG, "M-am mutat la tara");
             JSONObject jo = new JSONObject();
             try {
                 jo.put("uid", mToken);
@@ -142,8 +142,7 @@ public class MainActivity extends AppCompatActivity
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            //String ret = executePost("http://commhelpapp.appspot.com/updateuser", jo.toString());
-            //Log.i(TAG, "RASPUNS"+ret);
+            String ret = executePost("http://commhelpapp.appspot.com/updateuser", jo.toString());
         }
 
         @Override
@@ -323,7 +322,7 @@ public class MainActivity extends AppCompatActivity
 
         check_and_send();
     }
-    
+
     public void check_and_send() {
         if (mToken == "") {
             // Registration not finished yet

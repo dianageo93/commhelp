@@ -36,7 +36,7 @@ class RegisterUser(webapp2.RequestHandler):
         )
         u.put()
 
-
+# JSON has uid, lat, lon
 class GetHelp(webapp2.RequestHandler):
     def post(self):
         RADIUS = 100
@@ -50,10 +50,38 @@ class GetHelp(webapp2.RequestHandler):
                 and u.lon >= float(jsonobject["lon"]) - RADIUS
                 and u.lon <= float(jsonobject["lon"]) + RADIUS),
             registered_users)
+
+        if not registered_users:
+            return
+
+        ng = NotificationGroup(jsonobject["uid"])
+        for u in registered_users:
+            ng.uids.append(u.uid)
+        ng.put()
+
         self.response.write("Registered users:\n")
         for u in registered_users:
             self.response.write(str(u)+'\n')
 
+# JSON has uid, victim_uid
+class GiveHelp(webapp2.RequestHandler):
+    def post(self):
+        jsonobject = json.loads(self.request.body)
+        ng = NotificationGroup.all().filter("victim=", jsonobject["victim_uid"])
+
+        if not ng:
+            return
+
+        for u in ng.uids:
+            if u != jsonobject["uid"]
+                # TODO: send message to all the volunteers telling them that they
+                # are not needed any more
+                pass
+
+        ng.delete()
+
+
+# JSON has uid, lat, lon
 class UpdateUserData(webapp2.RequestHandler):
     def post(self):
         jsonobject = json.loads(self.request.body)
@@ -96,6 +124,7 @@ class Notifier(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/registeruser', RegisterUser),
     ('/gethelp', GetHelp),
+    ('/givehelp', GiveHelp),
     ('/updateuser', UpdateUserData),
     ('/notify', Notifier),
 ], debug=True)
