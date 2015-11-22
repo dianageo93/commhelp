@@ -159,11 +159,26 @@ class GiveReview(webapp2.RequestHandler):
 
         if volunteer.rank > 4:
             if volunteer.count_reviews == 1:
-                pass
+                level = 2
             elif volunteer.count_reviews == 3:
-                pass
+                level = 3
             elif volunteer.count_reviews == 5:
-                pass
+                level = 4
+
+        url = 'http://gcm-http.googleapis.com/gcm/send'
+        data = {
+                "data": {
+                    "type": "updatelevel",
+                    "level": str(level)
+                    },
+                "to": jsonobject["volunteer_uid"]
+                }
+        headers = {
+                "Content-Type":"application/json",
+                "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                }
+        req = urllib2.Request(url, json.dumps(data), headers)
+        response = urllib2.urlopen(req)
 
         credly_url = "api.credly.com/v1.1/member_badges?access_token=5fe22b295f727611a32f341a6cbea18698605858f26f6a084458122531003a79ddaa23f8e85e2c33f4ed952620d564ec04e3859f43dc92ae6a4262a7ae41b075"
 

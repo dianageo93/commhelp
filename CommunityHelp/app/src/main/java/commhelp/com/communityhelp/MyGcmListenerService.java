@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
+    private static final String PREFS_NAME = "MyPrefsFile";
     private static final int requestCodeMap = 0;
     private static final int requestCodeAccept = 1;
     private static final int requestCodeHelpAccepted = 2;
@@ -128,6 +130,10 @@ public class MyGcmListenerService extends GcmListenerService {
                 notificationBuilder.setSmallIcon(R.drawable.superhero4);
                 break;
         }
+
+        SharedPreferences.Editor edit = getSharedPreferences(PREFS_NAME, 0).edit();
+        edit.putString("volunteer_uid", data.getString("uid"));
+        edit.commit();
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
