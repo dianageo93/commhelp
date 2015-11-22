@@ -36,6 +36,8 @@ public class MyGcmListenerService extends GcmListenerService {
             openAcceptRequestActivity(data);
         } else if (type.equals("cancelrequest")) {
             cancelRequests(data);
+        } else if (type.equals("helponitsway")) {
+            helpOnItsWay(data);
         }
     }
 
@@ -101,5 +103,29 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(data.getString("victim_uid"), requestCodeAccept);
         notificationManager.cancel(data.getString("victim_uid"), requestCodeMap);
+    }
+
+    public void helpOnItsWay(Bundle data) {
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("Stay strong!")
+                .setContentText(data.getString("name") +" is on their way.")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri);
+
+        switch (data.getString("level")) {
+            case "1":
+                notificationBuilder.setSmallIcon(R.drawable.rookie1);
+                break;
+            case "2":
+                notificationBuilder.setSmallIcon(R.drawable.guardianangle2);
+                break;
+            case "3":
+                notificationBuilder.setSmallIcon(R.drawable.saviour3);
+                break;
+            case "4":
+                notificationBuilder.setSmallIcon(R.drawable.superhero4);
+                break;
+        }
     }
 }

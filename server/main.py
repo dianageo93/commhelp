@@ -118,6 +118,23 @@ class GiveHelp(webapp2.RequestHandler):
                 req = urllib2.Request(url, json.dumps(data), headers)
                 response = urllib2.urlopen(req)
 
+        url = 'http://gcm-http.googleapis.com/gcm/send'
+        data = {
+                "data": {
+                    "type": "helponitsway",
+                    "uid": jsonobject["uid"],
+                    "name": jsonobject["name"],
+                    "level": jsonobject["level"]
+                    },
+                "to": jsonobject["victim_uid"]
+                }
+        headers = {
+                "Content-Type":"application/json",
+                "Authorization":"key=AIzaSyBk3-v9AaKz8s2KYLuImlsIBSl1GF6XGlM"
+                }
+        req = urllib2.Request(url, json.dumps(data), headers)
+        response = urllib2.urlopen(req)
+
         ng.delete()
 
 
