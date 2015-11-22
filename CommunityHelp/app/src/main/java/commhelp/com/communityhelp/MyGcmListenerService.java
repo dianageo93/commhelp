@@ -8,13 +8,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
+    private static final int requestCodeMap = 0;
+    private static final int requestCodeAccept = 1;
 
     /**
      * Called when message is received.
@@ -26,6 +27,16 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        String type = data.getString("type");
+        if (type.equals("helprequest")) {
+            openMapWithLocation(data);
+        } else if (type.equals("acceptrequest")) {
+            openAcceptRequestActivity(data);
+        }
+
+    }
+
+    public void openMapWithLocation(Bundle data) {
         String name = data.getString("name");
         double latitude = Double.parseDouble(data.getString("lat"));
         double longitude = Double.parseDouble(data.getString("lng"));
@@ -36,7 +47,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
         Uri uri = Uri.parse(uriString);
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCodeMap, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -51,6 +62,28 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(requestCodeMap, notificationBuilder.build());
+    }
+
+    public void openAcceptRequestActivity(Bundle data) {
+        Intent intent = new Intent(this, AcceptActivity.class);
+        intent.setAction("commhelp.com.communityhelp.ACCEPT");
+        intent.addCategory("android.intent.category.DEFAULT");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCodeAccept, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.emergency)
+                .setContentTitle("New accept request notification")
+                .setContentText("Will you help " + data.getString("name") +"?")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(requestCodeAccept, notificationBuilder.build());
     }
 }
