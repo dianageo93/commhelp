@@ -1,5 +1,6 @@
 import cgi
 import json
+import logging
 import urllib
 import urllib2
 import webapp2
@@ -89,7 +90,7 @@ class GetHelp(webapp2.RequestHandler):
 class GiveHelp(webapp2.RequestHandler):
     def post(self):
         jsonobject = json.loads(self.request.body)
-        ng = NotificationGroup.all().filter("victim=", jsonobject["victim_uid"]).get()
+        ng = NotificationGroup.all().get()
 
         if not ng:
             return
