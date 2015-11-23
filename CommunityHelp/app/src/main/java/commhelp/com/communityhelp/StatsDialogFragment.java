@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 
 public class StatsDialogFragment extends DialogFragment {
+    private MainActivity main;
+
+    public void StatsDialogFragment(MainActivity _main) {
+        this.main = _main;
+    }
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -45,7 +50,8 @@ public class StatsDialogFragment extends DialogFragment {
         // Build the dialog and set up the button click handlers
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.stats_dialog, null))
+        View dialogView = inflater.inflate(R.layout.stats_dialog, null);
+        builder.setView(dialogView)
                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
 
                     @Override
@@ -53,26 +59,27 @@ public class StatsDialogFragment extends DialogFragment {
                         dialog.dismiss();
                     }
                 });
-        /*
-        ImageView badge = (ImageView) getActivity().findViewById(R.id.badge);
+
+        ImageView badge = (ImageView) dialogView.findViewById(R.id.badge);
         int badge_src = 0;
-        String mLevel = "3";
-        if (mLevel.equals("1")) {
+        String level = main.getLevel();
+        if (level.equals("1")) {
             badge_src = R.drawable.rookie1;
         }
-        if (mLevel.equals("2")) {
+        if (level.equals("2")) {
             badge_src = R.drawable.guardianangle2;
         }
-        if (mLevel.equals("3")) {
+        if (level.equals("3")) {
             badge_src = R.drawable.saviour3;
         }
-        if (mLevel.equals("4")) {
+        if (level.equals("4")) {
             badge_src = R.drawable.superhero4;
         }
         badge.setImageResource(badge_src);
-        RatingBar stars = (RatingBar) getActivity().findViewById(R.id.ratingBar);
+        RatingBar stars = (RatingBar) dialogView.findViewById(R.id.ratingBar_stats);
         stars.setRating(4);
-        */
+        stars.setIsIndicator(true);
+
         return builder.create();
     }
 

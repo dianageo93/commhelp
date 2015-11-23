@@ -10,12 +10,18 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RatingBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RatingDialogFragment extends DialogFragment {
+    private MainActivity main;
+
+    public RatingDialogFragment(MainActivity _main) {
+        this.main = _main;
+    }
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -48,7 +54,8 @@ public class RatingDialogFragment extends DialogFragment {
         // Build the dialog and set up the button click handlers
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.rating_dialog, null))
+        View dialogView = inflater.inflate(R.layout.rating_dialog, null);
+        builder.setView(dialogView)
                 .setNegativeButton("Submit", new DialogInterface.OnClickListener() {
 
                     @Override
@@ -56,7 +63,22 @@ public class RatingDialogFragment extends DialogFragment {
                         dialog.dismiss();
                     }
                 });
-        return builder.create();
+        Dialog dialog = builder.create();
+
+        //Button submit = (Button) getActivity().findViewById()
+        JSONObject jo = new JSONObject();
+        RatingBar ratingBar = (RatingBar) dialogView.findViewById(R.id.ratingBar);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(main.PREFS_NAME, 0);
+        try {
+            jo.put("source_uid", main.getToken());
+            jo.put("volunteer_uid", sharedPreferences.getString("volunteer_uid", ""));
+            jo.put("rank", ratingBar.getRating());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String ret = main.executePost("http://commhelpapp.appspot.com/givereview", jo.toString());
+
+        return dialog;
     }
 
 }

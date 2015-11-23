@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final long LOCATION_REFRESH_TIME = 5 * 60 * 1000;
     private static final float LOCATION_REFRESH_DISTANCE = (float) 0.1;
-    private static final String PREFS_NAME = "MyPrefsFile";
+    public static final String PREFS_NAME = "MyPrefsFile";
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
-    private String mToken = "";
+    public String mToken = "";
     private String mLevel = "";
     private String mName = "";
     private String mSex = "";
@@ -75,6 +75,14 @@ public class MainActivity extends AppCompatActivity
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+
+    public String getLevel() {
+        return mLevel;
+    }
+
+    public String getToken() {
+        return mToken;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,22 +320,8 @@ public class MainActivity extends AppCompatActivity
 
             }
             if (mRole.equals("default")) {
-                dialog = new RatingDialogFragment();
+                dialog = new RatingDialogFragment(this);
                 dialog.show(getSupportFragmentManager(), "RatingDialogFragment");
-
-                /*Button submit = (Button) findViewById()
-                JSONObject jo = new JSONObject();
-                RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-                SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
-                try {
-                    jo.put("source_uid", mToken);
-                    jo.put("volunteer_uid", sharedPreferences.getString("volunteer_uid", ""));
-                    jo.put("rank", ratingBar.getRating());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                String ret = executePost("http://commhelpapp.appspot.com/givereview", jo.toString());
-                */
             }
         }
 
