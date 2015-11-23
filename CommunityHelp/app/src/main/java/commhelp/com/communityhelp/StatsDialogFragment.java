@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.Rating;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +17,7 @@ import android.widget.RatingBar;
 public class StatsDialogFragment extends DialogFragment {
     private MainActivity main;
 
-    public void StatsDialogFragment(MainActivity _main) {
+    public void setMainActivity(MainActivity _main) {
         this.main = _main;
     }
 
@@ -66,18 +68,32 @@ public class StatsDialogFragment extends DialogFragment {
         if (level.equals("1")) {
             badge_src = R.drawable.rookie1;
         }
-        if (level.equals("2")) {
+        else if (level.equals("2")) {
             badge_src = R.drawable.guardianangle2;
         }
-        if (level.equals("3")) {
+        else if (level.equals("3")) {
             badge_src = R.drawable.saviour3;
         }
-        if (level.equals("4")) {
+        else if (level.equals("4")) {
             badge_src = R.drawable.superhero4;
         }
         badge.setImageResource(badge_src);
         RatingBar stars = (RatingBar) dialogView.findViewById(R.id.ratingBar_stats);
-        stars.setRating(4);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(main.PREFS_NAME, 0);
+
+        String rating = sharedPreferences.getString("rank", "");
+        Integer int_rating = 0;
+        try
+        {
+            int_rating = Integer.parseInt(rating);
+        }
+        catch(NumberFormatException nfe)
+        {
+            int_rating = 0;
+        }
+        Log.i("TAG", "AFISARE " +rating);
+        Log.i("TAG", "NUMAR " + int_rating);
+        stars.setRating(int_rating);
         stars.setIsIndicator(true);
 
         return builder.create();

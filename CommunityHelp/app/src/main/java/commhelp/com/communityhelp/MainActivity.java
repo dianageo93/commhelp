@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private LocationManager mLocationManager = null;
     public String mToken = "";
-    private String mLevel = "";
+    private String mLevel = "1";
     private String mName = "";
     private String mSex = "";
     private String mPhoneNumber = "";
@@ -316,11 +316,13 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.stats) {
             if (mRole.equals("helper")) {
                 dialog = new StatsDialogFragment();
+                ((StatsDialogFragment) dialog).setMainActivity(this);
                 dialog.show(getSupportFragmentManager(), "StatsDialogFragment");
 
             }
             if (mRole.equals("default")) {
-                dialog = new RatingDialogFragment(this);
+                dialog = new RatingDialogFragment();
+                ((RatingDialogFragment) dialog).setMainActivity(this);
                 dialog.show(getSupportFragmentManager(), "RatingDialogFragment");
             }
         }

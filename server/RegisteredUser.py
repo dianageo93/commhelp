@@ -12,7 +12,7 @@ class RegisteredUser(db.Model):
     email = db.EmailProperty()
     lat = db.FloatProperty(required=True)
     lon = db.FloatProperty(required=True)
-    rank = db.IntegerProperty(required=True)
+    rank = db.IntegerProperty(required=True) # TODO: should be float
     count_reviews = db.IntegerProperty(required=True)
     role = db.StringProperty(
         required=True,

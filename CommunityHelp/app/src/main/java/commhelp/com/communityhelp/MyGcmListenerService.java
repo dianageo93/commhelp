@@ -42,7 +42,7 @@ public class MyGcmListenerService extends GcmListenerService {
         } else if (type.equals("helponitsway")) {
             helpOnItsWay(data);
         } else if (type.equals("updatelevel")) {
-            updateMyLevel(data);
+            updateMyRankAndLevel(data);
         }
     }
 
@@ -143,8 +143,10 @@ public class MyGcmListenerService extends GcmListenerService {
                 notificationBuilder.build());
     }
 
-    public void updateMyLevel(Bundle data) {
+    public void updateMyRankAndLevel(Bundle data) {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
+        Log.i("TAG", "ACTUAL"+data.getString("level")+" SI "+data.getString("rank"));
         editor.putString(QuickstartPreferences.LEVEL, data.getString("level"));
+        editor.putString(QuickstartPreferences.RANK, data.getString("rank"));
     }
 }

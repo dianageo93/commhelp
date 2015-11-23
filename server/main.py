@@ -153,10 +153,12 @@ class GiveReview(webapp2.RequestHandler):
         volunteer = volunteer[0]
         self.response.write("Am gasit voluntar "+str(volunteer)+'\n')
         volunteer.count_reviews = volunteer.count_reviews + 1
-        volunteer.rank = float(jsonobject["rank"]) if volunteer.rank == 0 \
-            else (volunteer.rank + jsonobject["rank"]) / volunteer.count_reviews
+        volunteer.rank = int(jsonobject["rank"]) \
+            if volunteer.rank == 0 \
+            else int((volunteer.rank + jsonobject["rank"])/volunteer.count_reviews)
         volunteer.put()
 
+        level = 1
         if volunteer.rank > 4:
             if volunteer.count_reviews == 1:
                 level = 2
@@ -182,7 +184,6 @@ class GiveReview(webapp2.RequestHandler):
         response = urllib2.urlopen(req)
 
         credly_url = "api.credly.com/v1.1/member_badges?access_token=5fe22b295f727611a32f341a6cbea18698605858f26f6a084458122531003a79ddaa23f8e85e2c33f4ed952620d564ec04e3859f43dc92ae6a4262a7ae41b075"
-
 
 
 # JSON has uid, lat, lon

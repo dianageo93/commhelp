@@ -10,4 +10,5 @@ public class QuickstartPreferences {
     public static final String YEAROFBIRTH = "yearofbirth";
     public static final String GENDER = "gender";
     public static final String LEVEL = "level";
+    public static final String RANK = "rank";
 }

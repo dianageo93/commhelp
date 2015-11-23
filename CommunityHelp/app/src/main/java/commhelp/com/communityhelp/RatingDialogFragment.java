@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.media.Rating;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +20,7 @@ import org.json.JSONObject;
 public class RatingDialogFragment extends DialogFragment {
     private MainActivity main;
 
-    public RatingDialogFragment(MainActivity _main) {
+    public void setMainActivity(MainActivity _main) {
         this.main = _main;
     }
 
@@ -76,6 +77,7 @@ public class RatingDialogFragment extends DialogFragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.i("TAG", "AM RATAT "+ratingBar.getRating());
         String ret = main.executePost("http://commhelpapp.appspot.com/givereview", jo.toString());
 
         return dialog;
